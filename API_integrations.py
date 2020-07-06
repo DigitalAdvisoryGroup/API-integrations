@@ -22,13 +22,13 @@ import io
 from google.cloud import vision
 from google.cloud.vision import types
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='C:\\Temp\\DAG-cda728af956d.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='/Users/ashvin/workspace/API-integrations/credentials.json'
 
 # Instantiates a client
 client = vision.ImageAnnotatorClient()
 
 # The name of the image file to annotate
-file_name = os.path.abspath('image.jpg')
+file_name = os.path.abspath('taj.jpg')
 
 
 # Names of likelihood from google.cloud.vision.enums
@@ -56,70 +56,56 @@ logos = response_logo.logo_annotations
 
 annotations = response.web_detection
 
-print('*** Labels: ***')
-for label in labels:
-    print(label.description)
+data = {}
 
-print('*** Faces: ***')
+#====label===========
+label_list = []
+for label in labels:
+    label_list.append(label.description)
+if label_list:
+    data['Labels'] = label_list
+
+
+#======Faces=========
+face_list = []
 for face in faces:
-    print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
-    print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
-    print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
+    face_list.append('anger: {}'.format(likelihood_name[face.anger_likelihood]))
+    face_list.append('joy: {}'.format(likelihood_name[face.joy_likelihood]))
+    face_list.append('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
 
     vertices = (['({},{})'.format(vertex.x, vertex.y)
         for vertex in face.bounding_poly.vertices])
-    print('face bounds: {}'.format(','.join(vertices)))
+    face_list.append('face bounds: {}'.format(','.join(vertices)))
+if face_list:
+    data['Faces'] = face_list
 
-print('*** Landmarks: ***')
+
+#======Landmarks=========
+landmark_list = []
 for landmark in landmarks:
     print(landmark.description)
     for location in landmark.locations:
         lat_lng = location.lat_lng
-        print('Latitude {}'.format(lat_lng.latitude))
-        print('Longitude {}'.format(lat_lng.longitude))
+        landmark_list.apeend('Latitude {}'.format(lat_lng.latitude))
+        landmark_list.apeend('Longitude {}'.format(lat_lng.longitude))
+if landmark_list:
+    data['Landmarks'] = landmark_list
 
-print('*** Logos: ***')
+
+
+#=====logo=====
+logo_list = []
 for logo in logos:
-    print(logo.description)
+    logo_list.append(logo.description)
+if logo_list:
+    data['Logos'] = logo_list
 
-print('*** Annotations: ***')
+#=======Annotations=====
+annotation_list = []
 if annotations.best_guess_labels:
     for label in annotations.best_guess_labels:
-        print('\nBest guess label: {}'.format(label.label))
-
-if annotations.pages_with_matching_images:
-    print('\n{} Pages with matching images found:'.format(
-        len(annotations.pages_with_matching_images)))
-
-    for page in annotations.pages_with_matching_images:
-        print('\n\tPage url   : {}'.format(page.url))
-
-        if page.full_matching_images:
-            print('\t{} Full Matches found: '.format(
-                len(page.full_matching_images)))
-
-            for image in page.full_matching_images:
-                print('\t\tImage url  : {}'.format(image.url))
-
-        if page.partial_matching_images:
-            print('\t{} Partial Matches found: '.format(
-                len(page.partial_matching_images)))
-
-            for image in page.partial_matching_images:
-                print('\t\tImage url  : {}'.format(image.url))
-
-if annotations.web_entities:
-    print('\n{} Web entities found: '.format(
-        len(annotations.web_entities)))
-
-    for entity in annotations.web_entities:
-        print('\n\tScore      : {}'.format(entity.score))
-        print(u'\tDescription: {}'.format(entity.description))
-
-if annotations.visually_similar_images:
-    print('\n{} visually similar images found:\n'.format(
-        len(annotations.visually_similar_images)))
-
-    for image in annotations.visually_similar_images:
-        print('\tImage url    : {}'.format(image.url))
+        annotation_list.apeend('\nBest guess label: {}'.format(label.label))
+if annotation_list:
+    data['Annotations'] = annotation_list
+print ">>>>>>>", data
 

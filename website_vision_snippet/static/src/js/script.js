@@ -12,12 +12,8 @@ sAnimation.registry.vision = sAnimation.Class.extend({
       'change #upload_vision_file': '_onUploadVisionFile',
   },
   _onUploadVisionFile: function (ev) {
-    var $title = $(ev.target.parentElement).parents('.vision_upload').find('.title');
     var $el = $(ev.target.parentElement).parents('.vision_upload').find('.response');
-    var $faces = $(ev.target.parentElement).parents('.vision_upload').find('.faces');
-    var $lm = $(ev.target.parentElement).parents('.vision_upload').find('.lm');
-    var $logos = $(ev.target.parentElement).parents('.vision_upload').find('.logos');
-    var $anno = $(ev.target.parentElement).parents('.vision_upload').find('.anno');
+    $el.html('');
     var $loading = $(ev.target.parentElement).parents('.vision_upload').find('.loading');
     $loading.show();
     var $upload_btn = $(ev.target.parentElement).parents('.vision_upload').find('.upload-container');
@@ -31,36 +27,9 @@ sAnimation.registry.vision = sAnimation.Class.extend({
           'fileContents': e.target.result
         };
 
-        ajax.jsonRpc('/check/vision', 'call', data).then(function (resp) {
+        ajax.jsonRpc('/vision/response', 'call', data).then(function (resp) {
           if (resp) {
-            $title.html('');
-            $el.html('');
-            $faces.html('');
-            $lm.html('');
-            $logos.html('');
-            $anno.html('');
-            $title.append('<h1>IMAGE ANALYSIS</h1>');
-
-            $.each(resp.datass, function(index, data){
-              $el.append('<p>' + data + '</p>');
-            });
-
-            $.each(resp.faces_datas, function(index, data){
-              $faces.append('<p>' + data + '</p>');
-            });
-
-            $.each(resp.lm_datas, function(index, data){
-              $lm.append('<p>' + data + '</p>');
-            });
-
-            $.each(resp.logos_datas, function(index, data){
-              $logos.append('<p>' + data + '</p>');
-            });
-
-            $.each(resp.anno_datas, function(index, data){
-              $anno.append('<p>' + data + '</p>');
-            });
-
+            $el.html(resp.datas);
             $loading.hide();
             $upload_btn.show();
           }
