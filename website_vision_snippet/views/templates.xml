@@ -47,17 +47,25 @@
 </template>
 
 <template id="vision_response" name="Vision Response">
-    <h1 class="mb32">Vision Response</h1>
-    <div class="container">
-        <div class="row">
-            <div class="col-4" t-foreach="datas" t-as="data">
-                <p class="heading"><b><t t-esc="data"/></b></p>
-                <t t-foreach="datas.get(data)" t-as="d">
-                    <p><t t-esc="d"/></p>
-                </t>
-            </div>
-        </div>
-    </div>
+  <div class="container">
+    <t t-foreach="datas" t-as="data">
+      
+      <div class="row" align="centered">
+        <b>
+          <t t-esc="data"/>:<![CDATA[&nbsp;]]>
+        </b>
+
+        <t t-foreach="datas.get(data)" t-as="d">
+          <li class="fa fa-name"/>
+          <t t-esc="d"/>
+          <pre> | </pre>
+        </t>
+
+      </div>
+    </t>
+
+  </div>
+
 </template>
 
 </odoo>
