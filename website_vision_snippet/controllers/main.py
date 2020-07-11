@@ -48,10 +48,11 @@ class VisionAPI(http.Controller):
         response_faces = client.face_detection(image=image)
         faces = response_faces.face_annotations
 
-        response_landmark = client.face_detection(image=image)
+        response_landmark = client.landmark_detection(image=image)
         landmarks = response_landmark.landmark_annotations
 
-        response_logo = client.face_detection(image=image)
+        # logo detection
+        response_logo = client.logo_detection(image=image)
         logos = response_logo.logo_annotations
 
         annotations = response.web_detection
@@ -68,24 +69,28 @@ class VisionAPI(http.Controller):
         #======Faces=========
         face_list = []
         for face in faces:
-            face_list.append('anger: {}'.format(likelihood_name[face.anger_likelihood]))
-            face_list.append('joy: {}'.format(likelihood_name[face.joy_likelihood]))
-            face_list.append('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
+            face_list.append('\tanger: {}'.format(likelihood_name[face.anger_likelihood]))
+            face_list.append('\tjoy: {}'.format(likelihood_name[face.joy_likelihood]))
+            face_list.append('\tsurprise: {}'.format(likelihood_name[face.surprise_likelihood]))
 
-            vertices = (['({},{})'.format(vertex.x, vertex.y)
-                for vertex in face.bounding_poly.vertices])
-            face_list.append('face bounds: {}'.format(','.join(vertices)))
+            #vertices = (['({},{})'.format(vertex.x, vertex.y)
+                #for vertex in face.bounding_poly.vertices])
+            #face_list.append('face bounds: {}'.format(','.join(vertices)))
+
         if face_list:
             data['Faces'] = face_list
 
         #======Landmarks=========
         landmark_list = []
         for landmark in landmarks:
-            print(landmark.description)
+            #print(landmark.description)
+            landmark_list.append(landmark.description)
+
             for location in landmark.locations:
                 lat_lng = location.lat_lng
-                landmark_list.apeend('Latitude {}'.format(lat_lng.latitude))
-                landmark_list.apeend('Longitude {}'.format(lat_lng.longitude))
+                landmark_list.append('Latitude {}'.format(lat_lng.latitude))
+                landmark_list.append('Longitude {}'.format(lat_lng.longitude))
+
         if landmark_list:
             data['Landmarks'] = landmark_list
 
